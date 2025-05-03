@@ -16,13 +16,10 @@ const LoginForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
         setLoading(true);
-        setError(''); // Clear previous errors
+        setError('');
 
-        // Send login request to Firebase Authentication
         signInWithEmailAndPassword(auth, username, password)
-            .then((userCredential) => {
-                // Signed in
-                // Navigate to Home page after successful login
+            .then(() => {
                 navigate('/home');
             })
             .catch((error) => {
@@ -30,13 +27,10 @@ const LoginForm = () => {
                 const errorMessage = error.message;
                 console.log('Login error:', errorCode, errorMessage);
 
-                // Set user-friendly error message
                 if (errorCode === 'auth/invalid-credential') {
                     setError('Invalid email or password. Please try again.');
                 } else if (errorCode === 'auth/user-not-found') {
                     setError('No account found with this email. Please check your email or sign up.');
-                } else if (errorCode === 'auth/wrong-password') {
-                    setError('Incorrect password. Please try again.');
                 } else if (errorCode === 'auth/too-many-requests') {
                     setError('Too many failed login attempts. Please try again later.');
                 } else {
