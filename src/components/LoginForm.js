@@ -9,7 +9,6 @@ const LoginForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Login attempt with:', {username, password});
         // Here you would typically handle authentication
     };
 
@@ -20,48 +19,25 @@ const LoginForm = () => {
                     <div className="box">
                         <h1 className="title has-text-centered">Login</h1>
                         <form onSubmit={handleSubmit}>
-                            <div className="field">
-                                <label className="label">Username</label>
-                                <div className="control has-icons-left">
-                                    <input
-                                        className="input"
-                                        type="text"
-                                        placeholder="e.g. johndoe"
-                                        value={username}
-                                        onChange={(e) => setUsername(e.target.value)}
-                                        required
-                                    />
-                                    <span className="icon is-small is-left">
-                    <FontAwesomeIcon icon={faUser}/>
-                  </span>
-                                </div>
-                            </div>
+                            <InputBox 
+                                label="Email"
+                                type="email"
+                                placeholder="address@example.com"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                icon={faUser}
+                                required={true}
+                            />
 
-                            <div className="field">
-                                <label className="label">Password</label>
-                                <div className="control has-icons-left">
-                                    <input
-                                        className="input"
-                                        type="password"
-                                        placeholder="********"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                        required
-                                    />
-                                    <span className="icon is-small is-left">
-                    <FontAwesomeIcon icon={faLock}/>
-                  </span>
-                                </div>
-                            </div>
-
-                            <div className="field">
-                                <div className="control">
-                                    <label className="checkbox">
-                                        <input type="checkbox"/>
-                                        {' Remember me'}
-                                    </label>
-                                </div>
-                            </div>
+                            <InputBox 
+                                label="Password"
+                                type="password"
+                                placeholder="********"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                icon={faLock}
+                                required={true}
+                            />
 
                             <div className="field">
                                 <button className="button is-primary is-fullwidth" type="submit">
@@ -71,6 +47,27 @@ const LoginForm = () => {
                         </form>
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+};
+
+function InputBox({ label, type, placeholder, value, onChange, icon, required }) {
+    return (
+        <div className="field">
+            <label className="label">{label}</label>
+            <div className="control has-icons-left">
+                <input
+                    className="input"
+                    type={type}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                />
+                <span className="icon is-small is-left">
+                    <FontAwesomeIcon icon={icon}/>
+                </span>
             </div>
         </div>
     );
