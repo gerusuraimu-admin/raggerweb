@@ -4,27 +4,24 @@ import './App.css';
 import LoginForm from './components/LoginForm';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
+import TokenManager from './components/TokenManager';
 
 function App() {
     return (
         <Router>
-            <div className="App">
-                <section className="section" style={{ 
-                    minHeight: '100vh', 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    justifyContent: 'center' 
-                }}>
-                    <Routes>
-                        <Route path="/" element={<LoginForm />} />
-                        <Route path="/home" element={
-                            <ProtectedRoute>
-                                <Home />
-                            </ProtectedRoute>
-                        } />
-                    </Routes>
-                </section>
-            </div>
+            <Routes>
+                <Route path="/" element={<LoginForm />} />
+                <Route path="/home" element={
+                    <ProtectedRoute>
+                        <Home />
+                    </ProtectedRoute>
+                } />
+                <Route path="/manage" element={
+                    <ProtectedRoute>
+                        <TokenManager />
+                    </ProtectedRoute>
+                } />
+            </Routes>
         </Router>
     );
 }

@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUser, faLock} from '@fortawesome/free-solid-svg-icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
+import './CommonStyle.css'
 
 const LoginForm = () => {
     const navigate = useNavigate();
@@ -43,8 +44,8 @@ const LoginForm = () => {
     };
 
     return (
-        <div className="container">
-            <div className="columns is-centered">
+        <div className="base">
+            <div className="columns base-contents">
                 <div className="column is-5-tablet is-4-desktop is-3-widescreen">
                     <div className="box">
                         <h1 className="title has-text-centered">Login</h1>
