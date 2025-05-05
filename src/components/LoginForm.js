@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import 'bulma/css/bulma.min.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faUser, faLock} from '@fortawesome/free-solid-svg-icons';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase';
+import {signInWithEmailAndPassword} from 'firebase/auth';
+import {auth} from '../firebase';
 import './CommonStyle.css'
 
 const LoginForm = () => {
@@ -50,7 +50,7 @@ const LoginForm = () => {
                     <div className="box">
                         <h1 className="title has-text-centered">Login</h1>
                         <form onSubmit={handleSubmit}>
-                            <InputBox 
+                            <InputBox
                                 label="Email"
                                 type="email"
                                 placeholder="address@example.com"
@@ -60,7 +60,7 @@ const LoginForm = () => {
                                 required={true}
                             />
 
-                            <InputBox 
+                            <InputBox
                                 label="Password"
                                 type="password"
                                 placeholder="********"
@@ -77,9 +77,9 @@ const LoginForm = () => {
                             )}
 
                             <div className="field">
-                                <button 
-                                    className={`button is-primary is-fullwidth ${loading ? 'is-loading' : ''}`} 
-                                    type="submit" 
+                                <button
+                                    className={`button is-primary is-fullwidth ${loading ? 'is-loading' : ''}`}
+                                    type="submit"
                                     disabled={loading}
                                 >
                                     Login
@@ -93,7 +93,7 @@ const LoginForm = () => {
     );
 };
 
-function InputBox({ label, type, placeholder, value, onChange, icon, required }) {
+function InputBox({label, type, placeholder, value, onChange, icon, required}) {
     return (
         <div className="field">
             <label className="label">{label}</label>

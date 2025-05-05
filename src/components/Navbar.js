@@ -30,7 +30,7 @@ function Navbar() {
                     <div className="navbar-item">
                         <div className="buttons">
                             <button onClick={handleLogout} className="button is-danger">
-                                <span className="icon"><FontAwesomeIcon icon={faSignOutAlt} /></span>
+                                <span className="icon"><FontAwesomeIcon icon={faSignOutAlt}/></span>
                                 <span>Logout</span>
                             </button>
                         </div>

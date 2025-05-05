@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import React, {useEffect, useState} from 'react';
+import {Navigate} from 'react-router-dom';
+import {onAuthStateChanged} from 'firebase/auth';
+import {auth} from '../firebase';
 import './CommonStyle.css'
 
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({children}) => {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
 
@@ -18,7 +18,6 @@ const ProtectedRoute = ({ children }) => {
     }, []);
 
     if (loading) {
-        // You could render a loading spinner here
         return (
             <div className="base">
                 <div className="base-contents">
@@ -29,7 +28,7 @@ const ProtectedRoute = ({ children }) => {
     }
 
     if (!user) {
-        return <Navigate to="/" />;
+        return <Navigate to="/"/>;
     }
 
     return children;

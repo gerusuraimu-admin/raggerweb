@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route} from 'react-router-dom';
 import './App.css';
 import LoginForm from './components/LoginForm';
 import Home from './components/Home';
@@ -10,17 +10,13 @@ function App() {
     return (
         <Router>
             <Routes>
-                <Route path="/" element={<LoginForm />} />
+                <Route path="/" element={<LoginForm/>}/>
                 <Route path="/home" element={
-                    <ProtectedRoute>
-                        <Home />
-                    </ProtectedRoute>
-                } />
+                    <ProtectedRoute><Home/></ProtectedRoute>
+                }/>
                 <Route path="/manage" element={
-                    <ProtectedRoute>
-                        <TokenManager />
-                    </ProtectedRoute>
-                } />
+                    <ProtectedRoute><TokenManager/></ProtectedRoute>
+                }/>
             </Routes>
         </Router>
     );
