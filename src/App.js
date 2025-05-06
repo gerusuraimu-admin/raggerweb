@@ -5,6 +5,7 @@ import LoginForm from './components/LoginForm';
 import Home from './components/Home';
 import ProtectedRoute from './components/ProtectedRoute';
 import TokenManager from './components/TokenManager';
+import DocumentManager from './components/DocumentManager';
 
 function App() {
     return (
@@ -16,6 +17,9 @@ function App() {
                 }/>
                 <Route path="/manage" element={
                     <ProtectedRoute><TokenManager/></ProtectedRoute>
+                }/>
+                <Route path="/document" element={
+                    <ProtectedRoute><DocumentManager/></ProtectedRoute>
                 }/>
             </Routes>
         </Router>

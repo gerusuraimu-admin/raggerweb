@@ -24,6 +24,7 @@ function Navbar() {
                 <div className="navbar-start">
                     <a href="/home" className="navbar-item">Home</a>
                     <a href="/manage" className="navbar-item">Manage</a>
+                    <a href="/document" className="navbar-item">Document</a>
                 </div>
 
                 <div className="navbar-end">
