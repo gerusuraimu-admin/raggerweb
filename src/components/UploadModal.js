@@ -31,7 +31,10 @@ const UploadModal = ({isActive, onClose, onUpload, uid}) => {
                     size: file.size,
                     uploaded_at: serverTimestamp(),
                     processed: false,
-                    embedding_id: null
+                    embedding_id: null,
+                    filetype: null,
+                    category: null,
+                    summary: null
                 });
             }
 
