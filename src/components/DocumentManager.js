@@ -1,9 +1,11 @@
 import React, {useState, useEffect, useCallback} from 'react';
+import { deleteDoc, doc } from "firebase/firestore";
 import {getStorage, ref, listAll, getDownloadURL, deleteObject} from "firebase/storage";
-import {auth} from '../firebase';
+import {auth, db} from '../firebase';
 import UploadModal from './UploadModal';
 import Navbar from './Navbar';
 import './CommonStyle.css'
+import './DocumentManager.css'
 
 const storage = getStorage();
 
@@ -32,9 +34,11 @@ const DocumentManager = () => {
         setLoading(false);
     }, [uid]);
 
-    const handleDelete = async (refToDelete) => {
+    const handleDelete = async (file) => {
         try {
-            await deleteObject(refToDelete);
+            await deleteObject(file.ref);
+            const docId = `${uid}_${file.name}`;
+            await deleteDoc(doc(db, "documents", docId));
             await fetchFiles();
         } catch (error) {
             console.error("削除失敗:", error);
@@ -51,11 +55,28 @@ const DocumentManager = () => {
         });
     };
 
+    const handleSelectAll = () => {
+        if (files.length === 0) return;
+
+        if (selectedFiles.length === files.length) {
+            setSelectedFiles([]);
+        } else {
+            setSelectedFiles(files.map(file => file.ref));
+        }
+    };
+
     const handleBulkDelete = async () => {
-        if (selectedFiles.length === 0) return;
+        if (selectedFiles.length === 0 || !uid) return;
 
         try {
-            await Promise.all(selectedFiles.map(fileRef => deleteObject(fileRef)));
+            await Promise.all(selectedFiles.map(async (fileRef) => {
+                await deleteObject(fileRef);
+
+                const fileName = fileRef.name;
+                const docId = `${uid}_${fileName}`;
+                await deleteDoc(doc(db, "documents", docId));
+            }));
+
             setSelectedFiles([]);
             await fetchFiles();
         } catch (error) {
@@ -77,6 +98,13 @@ const DocumentManager = () => {
                         ファイルをアップロード
                     </button>
                     <button 
+                        className="button is-info" 
+                        onClick={handleSelectAll}
+                        disabled={files.length === 0}
+                    >
+                        全選択
+                    </button>
+                    <button 
                         className="button is-danger" 
                         onClick={handleBulkDelete}
                         disabled={selectedFiles.length === 0}
@@ -87,7 +115,7 @@ const DocumentManager = () => {
                 {loading ? (
                     <p>読み込み中...</p>
                 ) : (
-                    <div className="table-container">
+                    <div className="table-container scrollable-table-container">
                         <table className="table is-fullwidth is-striped is-hoverable">
                             <thead>
                                 <tr>
@@ -125,7 +153,7 @@ const DocumentManager = () => {
                                             <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
                                                 <button
                                                     className="button is-small is-danger"
-                                                    onClick={() => handleDelete(file.ref)}
+                                                    onClick={() => handleDelete(file)}
                                                 >
                                                     削除
                                                 </button>

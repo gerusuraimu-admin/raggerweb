@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import {serverTimestamp, doc, setDoc} from "firebase/firestore";
+import {getStorage, ref, uploadBytes} from "firebase/storage";
+import {useState} from "react";
+import {db} from "../firebase";
 import './UploadModal.css';
 
 const storage = getStorage();
 const MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
 
-const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
+const UploadModal = ({isActive, onClose, onUpload, uid}) => {
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [sizeError, setSizeError] = useState(false);
@@ -20,6 +22,17 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                 const filePath = `documents/${uid}/${timestamp}_${file.name}`;
                 const fileRef = ref(storage, filePath);
                 await uploadBytes(fileRef, file);
+
+                const docRef = doc(db, "documents", `${uid}_${timestamp}_${file.name}`);
+                await setDoc(docRef, {
+                    uid,
+                    filename: file.name,
+                    path: filePath,
+                    size: file.size,
+                    uploaded_at: serverTimestamp(),
+                    processed: false,
+                    embedding_id: null
+                });
             }
 
             onUpload();
@@ -44,10 +57,10 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                 <section className="modal-card-body">
                     <div className="file-area">
                         <label className="file-label">
-                            <input 
-                                className="file-input" 
-                                type="file" 
-                                multiple 
+                            <input
+                                className="file-input"
+                                type="file"
+                                multiple
                                 onChange={(e) => {
                                     const selectedFiles = Array.from(e.target.files);
                                     const totalSize = selectedFiles.reduce((total, file) => total + file.size, 0);
@@ -59,7 +72,7 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                                         setSizeError(false);
                                         setFiles(selectedFiles);
                                     }
-                                }} 
+                                }}
                             />
                             <span className="file-cta">
                                 <span className="file-icon">
@@ -86,16 +99,17 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                                 <div key={index} className="selected-file">
                                     <span className="file-icon">📄</span>
                                     <span className="selected-file-name">{file.name}</span>
-                                    <span className="selected-file-size">({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
+                                    <span
+                                        className="selected-file-size">({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
                                 </div>
                             ))}
                         </div>
                     )}
                 </section>
                 <footer className="modal-card-foot">
-                    <button 
-                        className={`button is-success ${uploading ? 'is-loading' : ''}`} 
-                        onClick={handleUpload} 
+                    <button
+                        className={`button is-success ${uploading ? 'is-loading' : ''}`}
+                        onClick={handleUpload}
                         disabled={uploading}
                     >
                         アップロード
