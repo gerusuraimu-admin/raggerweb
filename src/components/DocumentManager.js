@@ -55,19 +55,33 @@ const DocumentManager = () => {
                 {loading ? (
                     <p>読み込み中...</p>
                 ) : (
-                    <ul>
-                        {files.map((file, index) => (
-                            <li key={index} className="mb-2">
-                                <a href={file.url} target="_blank" rel="noreferrer">{file.name}</a>
-                                <button
-                                    className="button is-small is-danger ml-2"
-                                    onClick={() => handleDelete(file.ref)}
-                                >
-                                    削除
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
+                    <div className="table-container">
+                        <table className="table is-fullwidth is-striped is-hoverable">
+                            <thead>
+                                <tr>
+                                    <th>ファイル名</th>
+                                    <th style={{ width: '100px', textAlign: 'center' }}>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {files.map((file, index) => (
+                                    <tr key={index}>
+                                        <td style={{ verticalAlign: 'middle', wordBreak: 'break-all' }}>
+                                            <a href={file.url} target="_blank" rel="noreferrer">{file.name}</a>
+                                        </td>
+                                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                            <button
+                                                className="button is-small is-danger"
+                                                onClick={() => handleDelete(file.ref)}
+                                            >
+                                                削除
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 )}
 
                 <UploadModal

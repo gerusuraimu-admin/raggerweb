@@ -5,19 +5,24 @@ import './UploadModal.css';
 const storage = getStorage();
 
 const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
 
     const handleUpload = async () => {
-        if (!file || !uid) return;
+        if (files.length === 0 || !uid) return;
         setUploading(true);
-        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const filePath = `documents/${uid}/${timestamp}_${file.name}`;
-        const fileRef = ref(storage, filePath);
+
         try {
-            await uploadBytes(fileRef, file);
+            // Upload each file sequentially
+            for (const file of files) {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const filePath = `documents/${uid}/${timestamp}_${file.name}`;
+                const fileRef = ref(storage, filePath);
+                await uploadBytes(fileRef, file);
+            }
+
             onUpload();
-            setFile(null);
+            setFiles([]);
             onClose();
         } catch (error) {
             console.error("アップロード失敗:", error);
@@ -38,21 +43,31 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                 <section className="modal-card-body">
                     <div className="file-area">
                         <label className="file-label">
-                            <input className="file-input" type="file" onChange={(e) => setFile(e.target.files[0])} />
+                            <input 
+                                className="file-input" 
+                                type="file" 
+                                multiple 
+                                onChange={(e) => setFiles(Array.from(e.target.files))} 
+                            />
                             <span className="file-cta">
                                 <span className="file-icon">
                                     📁
                                 </span>
                                 <span className="file-label">
-                                    ファイルを選択...
+                                    複数ファイルを選択...
                                 </span>
                             </span>
                         </label>
                     </div>
-                    {file && (
-                        <div className="selected-file">
-                            <span className="file-icon">📄</span>
-                            <span className="selected-file-name">{file.name}</span>
+                    {files.length > 0 && (
+                        <div className="selected-files">
+                            <p className="selected-files-count">{files.length}ファイルが選択されました</p>
+                            {files.map((file, index) => (
+                                <div key={index} className="selected-file">
+                                    <span className="file-icon">📄</span>
+                                    <span className="selected-file-name">{file.name}</span>
+                                </div>
+                            ))}
                         </div>
                     )}
                 </section>
