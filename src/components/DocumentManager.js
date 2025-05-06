@@ -42,7 +42,7 @@ const DocumentManager = () => {
 
     useEffect(() => {
         fetchFiles();
-    }, [uid]);
+    }, [fetchFiles]);
 
     return (
         <div className="base">
