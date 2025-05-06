@@ -3,10 +3,12 @@ import { getStorage, ref, uploadBytes } from 'firebase/storage';
 import './UploadModal.css';
 
 const storage = getStorage();
+const MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
 
 const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
     const [files, setFiles] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [sizeError, setSizeError] = useState(false);
 
     const handleUpload = async () => {
         if (files.length === 0 || !uid) return;
@@ -46,7 +48,18 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                                 className="file-input" 
                                 type="file" 
                                 multiple 
-                                onChange={(e) => setFiles(Array.from(e.target.files))} 
+                                onChange={(e) => {
+                                    const selectedFiles = Array.from(e.target.files);
+                                    const totalSize = selectedFiles.reduce((total, file) => total + file.size, 0);
+
+                                    if (totalSize >= MAX_TOTAL_SIZE) {
+                                        setSizeError(true);
+                                        setFiles([]);
+                                    } else {
+                                        setSizeError(false);
+                                        setFiles(selectedFiles);
+                                    }
+                                }} 
                             />
                             <span className="file-cta">
                                 <span className="file-icon">
@@ -58,13 +71,22 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
                             </span>
                         </label>
                     </div>
+                    {sizeError && (
+                        <div className="notification is-danger mt-3">
+                            <p>ファイルの合計サイズが1GBを超えています。より小さいサイズのファイルを選択してください。</p>
+                        </div>
+                    )}
                     {files.length > 0 && (
                         <div className="selected-files">
-                            <p className="selected-files-count">{files.length}ファイルが選択されました</p>
+                            <p className="selected-files-count">
+                                {files.length}ファイルが選択されました
+                                (合計: {(files.reduce((total, file) => total + file.size, 0) / (1024 * 1024)).toFixed(2)} MB)
+                            </p>
                             {files.map((file, index) => (
                                 <div key={index} className="selected-file">
                                     <span className="file-icon">📄</span>
                                     <span className="selected-file-name">{file.name}</span>
+                                    <span className="selected-file-size">({(file.size / (1024 * 1024)).toFixed(2)} MB)</span>
                                 </div>
                             ))}
                         </div>
