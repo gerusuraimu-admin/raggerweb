@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {getStorage, ref, listAll, getDownloadURL, deleteObject} from "firebase/storage";
 import {auth} from '../firebase';
 import UploadModal from './UploadModal';
@@ -14,7 +14,7 @@ const DocumentManager = () => {
 
     const uid = auth.currentUser?.uid;
 
-    const fetchFiles = async () => {
+    const fetchFiles = useCallback(async () => {
         if (!uid) return;
         setLoading(true);
         const userFolderRef = ref(storage, `documents/${uid}`);
@@ -22,14 +22,14 @@ const DocumentManager = () => {
             const res = await listAll(userFolderRef);
             const fileData = await Promise.all(res.items.map(async (itemRef) => {
                 const url = await getDownloadURL(itemRef);
-                return {name: itemRef.name, url, ref: itemRef};
+                return { name: itemRef.name, url, ref: itemRef };
             }));
             setFiles(fileData);
         } catch (error) {
             console.error("ファイル取得エラー:", error);
         }
         setLoading(false);
-    };
+    }, [uid]);
 
     const handleDelete = async (refToDelete) => {
         try {
