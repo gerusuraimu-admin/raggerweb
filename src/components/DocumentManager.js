@@ -11,6 +11,7 @@ const DocumentManager = () => {
     const [files, setFiles] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [selectedFiles, setSelectedFiles] = useState([]);
 
     const uid = auth.currentUser?.uid;
 
@@ -40,6 +41,28 @@ const DocumentManager = () => {
         }
     };
 
+    const handleSelectFile = (fileRef) => {
+        setSelectedFiles(prev => {
+            if (prev.some(ref => ref.fullPath === fileRef.fullPath)) {
+                return prev.filter(ref => ref.fullPath !== fileRef.fullPath);
+            } else {
+                return [...prev, fileRef];
+            }
+        });
+    };
+
+    const handleBulkDelete = async () => {
+        if (selectedFiles.length === 0) return;
+
+        try {
+            await Promise.all(selectedFiles.map(fileRef => deleteObject(fileRef)));
+            setSelectedFiles([]);
+            await fetchFiles();
+        } catch (error) {
+            console.error("一括削除失敗:", error);
+        }
+    };
+
     useEffect(() => {
         fetchFiles();
     }, [fetchFiles]);
@@ -49,9 +72,18 @@ const DocumentManager = () => {
             <Navbar/>
             <div className="container mt-5">
                 <h2 className="title is-4">ファイル管理</h2>
-                <button className="button is-primary mb-3" onClick={() => setShowModal(true)}>
-                    ファイルをアップロード
-                </button>
+                <div className="buttons mb-3">
+                    <button className="button is-primary" onClick={() => setShowModal(true)}>
+                        ファイルをアップロード
+                    </button>
+                    <button 
+                        className="button is-danger" 
+                        onClick={handleBulkDelete}
+                        disabled={selectedFiles.length === 0}
+                    >
+                        一括削除 ({selectedFiles.length})
+                    </button>
+                </div>
                 {loading ? (
                     <p>読み込み中...</p>
                 ) : (
@@ -59,26 +91,48 @@ const DocumentManager = () => {
                         <table className="table is-fullwidth is-striped is-hoverable">
                             <thead>
                                 <tr>
-                                    <th>ファイル名</th>
+                                    <th style={{ width: '75px', textAlign: 'center' }}>選択</th>
+                                    <th style={{ textAlign: 'center' }}>アップロード日</th>
+                                    <th style={{ textAlign: 'center' }}>ファイル名</th>
                                     <th style={{ width: '100px', textAlign: 'center' }}>操作</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {files.map((file, index) => (
-                                    <tr key={index}>
-                                        <td style={{ verticalAlign: 'middle', wordBreak: 'break-all' }}>
-                                            <a href={file.url} target="_blank" rel="noreferrer">{file.name}</a>
-                                        </td>
-                                        <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
-                                            <button
-                                                className="button is-small is-danger"
-                                                onClick={() => handleDelete(file.ref)}
-                                            >
-                                                削除
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
+                                {files.map((file, index) => {
+                                    const parts = file.name.split('_');
+                                    const uploadDate = parts[0].replace(/-/g, '/');
+                                    const actualFilename = parts.slice(1).join('_');
+
+                                    const isSelected = selectedFiles.some(ref => ref.fullPath === file.ref.fullPath);
+
+                                    return (
+                                        <tr key={index} className={isSelected ? "is-selected" : ""}>
+                                            <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                                <label className="checkbox">
+                                                    <input 
+                                                        type="checkbox" 
+                                                        checked={isSelected}
+                                                        onChange={() => handleSelectFile(file.ref)}
+                                                    />
+                                                </label>
+                                            </td>
+                                            <td style={{ verticalAlign: 'middle' }}>
+                                                {uploadDate}
+                                            </td>
+                                            <td style={{ verticalAlign: 'middle', wordBreak: 'break-all' }}>
+                                                <a href={file.url} target="_blank" rel="noreferrer">{actualFilename}</a>
+                                            </td>
+                                            <td style={{ textAlign: 'center', verticalAlign: 'middle' }}>
+                                                <button
+                                                    className="button is-small is-danger"
+                                                    onClick={() => handleDelete(file.ref)}
+                                                >
+                                                    削除
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
                             </tbody>
                         </table>
                     </div>

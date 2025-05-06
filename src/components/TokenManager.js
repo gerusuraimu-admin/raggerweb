@@ -51,7 +51,6 @@ const TokenManager = () => {
             updatedAt: new Date()
         }, {merge: true});
 
-        // Reset all token input fields
         resetFunctions.forEach(resetFn => resetFn());
 
         alert(`${botType.charAt(0).toUpperCase() + botType.slice(1)}トークンを保存しました`);

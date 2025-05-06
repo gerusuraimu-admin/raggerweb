@@ -13,9 +13,8 @@ const UploadModal = ({ isActive, onClose, onUpload, uid }) => {
         setUploading(true);
 
         try {
-            // Upload each file sequentially
             for (const file of files) {
-                const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+                const timestamp = new Date().toISOString().replace('T', '-').replace(/\./g, '-').replace('Z', '');
                 const filePath = `documents/${uid}/${timestamp}_${file.name}`;
                 const fileRef = ref(storage, filePath);
                 await uploadBytes(fileRef, file);
