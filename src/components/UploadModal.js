@@ -5,7 +5,7 @@ import {db} from "../firebase";
 import './UploadModal.css';
 
 const storage = getStorage();
-const MAX_TOTAL_SIZE = 1024 * 1024 * 1024;
+const MAX_TOTAL_SIZE = 1024;
 
 const UploadModal = ({isActive, onClose, onUpload, uid}) => {
     const [files, setFiles] = useState([]);
